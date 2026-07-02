@@ -1,0 +1,4 @@
+training:
+  scheduler: "warmup_cosine"
+  scheduler_args:
+    warmup_steps: 1000

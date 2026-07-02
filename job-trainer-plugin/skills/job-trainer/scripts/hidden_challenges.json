@@ -1,0 +1,140 @@
+{
+  "_comment": [
+    "Instructor-curated HIDDEN fine-tune datasets. These are NOT shown in the",
+    "student-facing dataset catalog in SKILL.md — they are surprise/challenge",
+    "tasks offered only AFTER a base run finishes (e.g. 'now make the car drive",
+    "clockwise'). `jobctl.py finetune <base_job> --challenge <key>` warm-starts",
+    "the finished model's weights (resume=false + load_dir) and trains on the",
+    "dataset_paths below.",
+    "",
+    "Each entry: description (shown to the student), dataset_paths (REAL on-server",
+    "paths — never invent these), optional data_type (default ios_dataset) and",
+    "data_overrides (extra data.* keys, e.g. max_dataset_size). A challenge whose",
+    "paths still contain 'PLACEHOLDER' will be refused at submit time.",
+    "",
+    "Structured metadata for these datasets (location/cones/direction/outside)",
+    "lives in finetune_datasets.json."
+  ],
+  "challenges": {
+    "clockwise": {
+      "description": "Teach the car to drive the loop clockwise (reverse direction).",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^zain-cw-cones^agent_zain_vitclip_hallt6_last^9^1781903251095"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "hall_both": {
+      "description": "Hallway driving in both directions (clockwise and counterclockwise) with no cones — general loop-following on a clear course.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain_hall_cw+ccw"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "hall_ccw_cones": {
+      "description": "Hallway driving counterclockwise through a cone course — navigating cones in the reverse direction.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^zain_ccw_cones^zain_vit_hall_cw_ccw_t5_last^9^1782162153691"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "hall_cw_cones": {
+      "description": "Hallway driving clockwise through a cone course.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^zain-hall-cw-cones^9^1781731942676"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "hall_both_cones": {
+      "description": "Hallway driving in both directions through a cone course — combined clockwise and counterclockwise cone navigation.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^zain-hall-cones-cw+ccw^9^1781642085692"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "hall_cones": {
+      "description": "Hallway driving focused on cone navigation — cones present, direction not encoded in the name.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^hall_justcones^9^1781801014612"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "largetrack_cw": {
+      "description": "Large outdoor track driven clockwise — no cones.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^largetrack_cw^agent_zain_vitclip_t1_outside_last^9^1782491109348"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "largetrack_ccw": {
+      "description": "Large outdoor track driven counterclockwise — no cones.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^largetrack_ccw^agent_zain_vitclip_t1_outside_last^9^1782489323338"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "largetrack_cw_cones": {
+      "description": "Large outdoor track driven clockwise through a cone course.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^largetrack_cw+cones^agent_zain_vitclip_t1_outside_last^9^1782491753106"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "largetrack_ccw_cones": {
+      "description": "Large outdoor track driven counterclockwise through a cone course.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^largetrack_ccw+cones^agent_zain_vitclip_t1_outside_last^9^1782491364191"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "largetrack_cw_fast": {
+      "description": "Large outdoor track driven clockwise at high speed (superfast) — no cones.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^largetrack_cw+superfast^agent_zain_vitclip_t1_outside_last^9^1782492271220"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "largetrack_ccw_fast": {
+      "description": "Large outdoor track driven counterclockwise at high speed (superfast) — no cones.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^largetrack_ccw+superfast^agent_zain_vitclip_t1_outside_last^9^1782492028803"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "outside_cw": {
+      "description": "Outdoor driving clockwise — no cones.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^outside_cw^agent_zain_vitclip_t7_last^9^1782330864008"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "outside_ccw": {
+      "description": "Outdoor driving counterclockwise — no cones.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^outside_ccw^agent_zain_vitclip_t7_last^9^1782330935310"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    },
+    "outside": {
+      "description": "Outdoor driving — direction not encoded in the name, no cones.",
+      "dataset_paths": [
+        "/studentdata/past_summer_camp/summer2026/datasets/zain^zain_outside^9^1781638392335"
+      ],
+      "data_type": "ios_dataset",
+      "data_overrides": {}
+    }
+  }
+}

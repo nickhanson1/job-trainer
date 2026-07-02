@@ -1,0 +1,21 @@
+sweep:
+  method: random
+  metric:
+    goal: minimize
+    name: loss/train
+
+  name: sweep
+  run_cap: 50
+  parameters:
+    training:
+      parameters:
+        batch_size:
+          distribution: q_log_uniform_values
+          max: 1024
+          min: 16
+        optimizer_args:
+          parameters:
+            lr:
+              distribution: log_uniform_values
+              max: 0.01
+              min: 1.0e-06

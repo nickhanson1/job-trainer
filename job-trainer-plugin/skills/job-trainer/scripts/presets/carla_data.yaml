@@ -1,0 +1,7 @@
+data:
+  type: "carla"
+  training:
+    - "dataset/train"
+  validation:
+    - "dataset/test"
+  obstacles: "dataset/obstacles"

@@ -1,0 +1,8 @@
+training:
+  model_name: "fastvit"
+  model_args:
+    layers: [4, 4, 12, 4]
+    embed_dims: [48, 96, 192, 384]
+    mlp_ratios: [3, 3, 3, 3]
+    downsamples: [True, True, True, True]
+    token_mixers: ["repmixer", "repmixer", "repmixer", "attention"]

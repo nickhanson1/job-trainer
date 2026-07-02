@@ -1,0 +1,23 @@
+data:
+  type: "android_dataset"
+  dataset_paths:
+    - "dataset"
+  num_workers_preprocessing: null
+  max_dataset_size: 20000
+  train_test_split: 0.8
+  resize:
+    h: 160
+    w: 320
+  augment:
+    brightness: 0.1
+    contrast: 0.1
+    hue: 0.05
+    saturation: 0.05
+  random_shift: 20
+  # FOV: 120
+  # steering_factor = 640/120*45/2 (why divide 2 here)
+  steering_factor: 120
+  max_augmentation: 160
+  # crop_size = 60/120*640 = 320 (target fov is 60)
+  crop_x: [160, 480]
+  crop_y: [85, 245]

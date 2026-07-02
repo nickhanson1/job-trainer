@@ -1,0 +1,132 @@
+{
+  "_comment": [
+    "Structured catalog of the hidden fine-tune datasets (source notes live in",
+    "finetune_datasets.txt). Each entry describes one on-server dataset folder.",
+    "On the server these folders live under",
+    "/studentdata/past_summer_camp/summer2026/datasets/<name>.",
+    "Descriptions are auto-written placeholders — Kevin may rewrite them.",
+    "To turn an entry into a usable challenge, add it to hidden_challenges.json."
+  ],
+  "datasets": [
+    {
+      "name": "zain_hall_cw+ccw",
+      "location": "hallway",
+      "cones": false,
+      "direction": "both",
+      "fast": false,
+      "description": "Hallway driving in both directions (clockwise and counterclockwise) with no cones — general loop-following on a clear course."
+    },
+    {
+      "name": "zain^zain_ccw_cones^zain_vit_hall_cw_ccw_t5_last^9^1782162153691",
+      "location": "hallway",
+      "cones": true,
+      "direction": "counterclockwise",
+      "fast": false,
+      "description": "Hallway driving counterclockwise through a cone course — navigating cones in the reverse direction."
+    },
+    {
+      "name": "zain^zain-cw-cones^agent_zain_vitclip_hallt6_last^9^1781903251095",
+      "location": "hallway",
+      "cones": true,
+      "direction": "clockwise",
+      "fast": false,
+      "description": "Hallway driving clockwise through a cone course — navigating cones in the forward direction."
+    },
+    {
+      "name": "zain^zain-hall-cones-cw+ccw^9^1781642085692",
+      "location": "hallway",
+      "cones": true,
+      "direction": "both",
+      "fast": false,
+      "description": "Hallway driving in both directions through a cone course — combined clockwise and counterclockwise cone navigation."
+    },
+    {
+      "name": "zain^hall_justcones^9^1781801014612",
+      "location": "hallway",
+      "cones": true,
+      "direction": "unknown",
+      "fast": false,
+      "description": "Hallway driving focused on cone navigation — cones present, direction not encoded in the name."
+    },
+    {
+      "name": "zain^largetrack_ccw^agent_zain_vitclip_t1_outside_last^9^1782489323338",
+      "location": "large track",
+      "cones": false,
+      "direction": "counterclockwise",
+      "fast": false,
+      "description": "Large outdoor track driven counterclockwise — no cones."
+    },
+    {
+      "name": "zain^largetrack_ccw+cones^agent_zain_vitclip_t1_outside_last^9^1782491364191",
+      "location": "large track",
+      "cones": true,
+      "direction": "counterclockwise",
+      "fast": false,
+      "description": "Large outdoor track driven counterclockwise through a cone course."
+    },
+    {
+      "name": "zain^largetrack_ccw+superfast^agent_zain_vitclip_t1_outside_last^9^1782492028803",
+      "location": "large track",
+      "cones": false,
+      "direction": "counterclockwise",
+      "fast": true,
+      "description": "Large outdoor track driven counterclockwise at high speed (superfast) — no cones."
+    },
+    {
+      "name": "zain^largetrack_cw^agent_zain_vitclip_t1_outside_last^9^1782491109348",
+      "location": "large track",
+      "cones": false,
+      "direction": "clockwise",
+      "fast": false,
+      "description": "Large outdoor track driven clockwise — no cones."
+    },
+    {
+      "name": "zain^largetrack_cw+cones^agent_zain_vitclip_t1_outside_last^9^1782491753106",
+      "location": "large track",
+      "cones": true,
+      "direction": "clockwise",
+      "fast": false,
+      "description": "Large outdoor track driven clockwise through a cone course."
+    },
+    {
+      "name": "zain^largetrack_cw+superfast^agent_zain_vitclip_t1_outside_last^9^1782492271220",
+      "location": "large track",
+      "cones": false,
+      "direction": "clockwise",
+      "fast": true,
+      "description": "Large outdoor track driven clockwise at high speed (superfast) — no cones."
+    },
+    {
+      "name": "zain^outside_ccw^agent_zain_vitclip_t7_last^9^1782330935310",
+      "location": "outside",
+      "cones": false,
+      "direction": "counterclockwise",
+      "fast": false,
+      "description": "Outdoor driving counterclockwise — no cones."
+    },
+    {
+      "name": "zain^outside_cw^agent_zain_vitclip_t7_last^9^1782330864008",
+      "location": "outside",
+      "cones": false,
+      "direction": "clockwise",
+      "fast": false,
+      "description": "Outdoor driving clockwise — no cones."
+    },
+    {
+      "name": "zain^zain-hall-cw-cones^9^1781731942676",
+      "location": "hallway",
+      "cones": true,
+      "direction": "clockwise",
+      "fast": false,
+      "description": "Hallway driving clockwise through a cone course."
+    },
+    {
+      "name": "zain^zain_outside^9^1781638392335",
+      "location": "outside",
+      "cones": false,
+      "direction": "unknown",
+      "fast": false,
+      "description": "Outdoor driving — direction not encoded in the name, no cones."
+    }
+  ]
+}

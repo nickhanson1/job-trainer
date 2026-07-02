@@ -1,0 +1,10 @@
+data:
+  # change according to what is available on htop
+  num_workers: 0
+  processing_device: "cuda"
+  use_embd: "simple"
+  embd_noise: 0
+
+  type: "waymo_e2e"
+  dataset_root: "/ssd4TB4/waymo-end2end"
+  repeat: 1

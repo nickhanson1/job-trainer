@@ -1,0 +1,6 @@
+convert:
+  conversion: "coreml" #onnx, android, onnx_to_tflite, coreml 
+  input_weights: "last.pth" #input .pth file
+  percision: "default" #default : f16, "f32" : f32
+
+  

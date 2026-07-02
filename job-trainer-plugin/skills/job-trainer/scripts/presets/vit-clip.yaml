@@ -1,0 +1,7 @@
+data:
+  resize:
+    h: 224
+    w: 224
+
+training:
+  model_name: "vit_clip"

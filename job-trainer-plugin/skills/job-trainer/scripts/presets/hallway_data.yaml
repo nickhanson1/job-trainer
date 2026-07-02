@@ -1,0 +1,13 @@
+_include: 
+  - ios_data.yaml
+data:
+  type: "ios_dataset" 
+  dataset_paths:
+    - "/home/kevin/code/av-training/data/hallway/"
+    - "/home/kevin/code/av-training/data/hallway_twoturns/"
+    - "/ssd4TB3/f2-ios/corners/middle"
+    - "/ssd4TB3/f2-ios/hallways/stick-center"
+    - "/ssd4TB3/f2-ios/loops"
+    - "/studentdata/ios/dataset/car3_strtrim-13_cewithallway2ndfloor_night"
+    - "/studentdata/ios/dataset/wideangle_iOS_3laps"
+    - "/home/kevin/code/av-training/data/hallway_donttakebridge"

@@ -1,0 +1,9 @@
+_include: 
+  - ios_data.yaml
+data:
+  dataset_paths:
+    - "/studentdata/ios/dataset/track_ios/ios_track_wideangle"
+    - "/studentdata/ios/dataset/track_ios/ios_track_outside_wideangle"
+    - "/home/kevin/code/track_feb9"
+    - "/home/kevin/code/av-training/data/small_track_cstep"
+    - "/home/kevin/code/av-training/data/small_track_supplemental_cstep"

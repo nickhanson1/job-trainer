@@ -1,0 +1,19 @@
+zain_hall_cw+ccw, clockwise and counterclockwise in the hall with no cones
+zain^zain_ccw_cones^zain_vit_hall_cw_ccw_t5_last^9^1782162153691, in the hall with cones, counterclockwise only
+zain^zain-cw-cones^agent_zain_vitclip_hallt6_last^9^1781903251095, in the hall with cones, clockwise
+zain^zain-hall-cones-cw+ccw^9^1781642085692, in hallway with cones, both clockwise and counterclockwise
+zain_hall_cw+ccw
+zain^hall_justcones^9^1781801014612'
+zain^largetrack_ccw^agent_zain_vitclip_t1_outside_last^9^1782489323338'
+zain^largetrack_ccw+cones^agent_zain_vitclip_t1_outside_last^9^1782491364191'
+zain^largetrack_ccw+superfast^agent_zain_vitclip_t1_outside_last^9^1782492028803'
+zain^largetrack_cw^agent_zain_vitclip_t1_outside_last^9^1782491109348'
+zain^largetrack_cw+cones^agent_zain_vitclip_t1_outside_last^9^1782491753106'
+zain^largetrack_cw+superfast^agent_zain_vitclip_t1_outside_last^9^1782492271220'
+zain^outside_ccw^agent_zain_vitclip_t7_last^9^1782330935310'
+zain^outside_cw^agent_zain_vitclip_t7_last^9^1782330864008'
+zain^zain_ccw_cones^zain_vit_hall_cw_ccw_t5_last^9^1782162153691'
+zain^zain-cw-cones^agent_zain_vitclip_hallt6_last^9^1781903251095'
+zain^zain-hall-cones-cw+ccw^9^1781642085692'
+zain^zain-hall-cw-cones^9^1781731942676'
+zain^zain_outside^9^1781638392335'

@@ -1,0 +1,6 @@
+_include: 
+  - ios_data.yaml
+data:
+  dataset_paths:
+    - "/home/kevin/code/av-training/data/large_track_cstep"
+    - "/home/kevin/code/av-training/data/large_track_supplemental_cstep"
