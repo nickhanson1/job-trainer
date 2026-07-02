@@ -9,7 +9,7 @@ To install, run the following three commands within the Claude Code terminal. Th
 `/plugin install job-trainer@job-trainer`  
 `/plugin reload-plugins`  
 
-In order to update, simply run  
+In order to update the plugin, run  
 
 `/plugin marketplace update`   
 
