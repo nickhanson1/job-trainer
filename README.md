@@ -8,6 +8,10 @@ To install, run the following three commands within the Claude Code terminal. Th
 '/plugin install job-trainer@job-trainer'
 '/plugin reload-plugins'
 
+In order to update, simply run
+'/plugin marketplace update'
+and choose job-trainer from the menu that appears. Auto-updated can also be turned on within this menu.
+
 ## How to Use
 
 This skill allows Claude to setup and send training jobs to the scheduler server. Claude will first need to know your username in order to send jobs and properly access your datasets. You need to use the same name you used to upload your datasets from the iPhone app. 
