@@ -3,13 +3,14 @@ Claude skill for creating job configurations for av-training, sending jobs to th
 
 ## How to Install
 
-To install, run the following three commands within the Claude Code terminal. They will add this repository as marketplace, install the plugin, then refresh the context:
-`/plugin marketplace add nickhanson1/job-trainer`
-`/plugin install job-trainer@job-trainer`
-`/plugin reload-plugins`
+To install, run the following three commands within the Claude Code terminal. They will add this repository as marketplace, install the plugin, then refresh the context:  
 
-In order to update, simply run
-`/plugin marketplace update`
+`/plugin marketplace add nickhanson1/job-trainer`  
+`/plugin install job-trainer@job-trainer`  
+`/plugin reload-plugins`  
+
+In order to update, simply run  
+`/plugin marketplace update`  
 and choose job-trainer from the menu that appears. Auto-updated can also be turned on within this menu.
 
 ## How to Use
