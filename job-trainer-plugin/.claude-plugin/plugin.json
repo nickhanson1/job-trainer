@@ -1,0 +1,8 @@
+{
+  "name": "job-trainer",
+  "description": "A skill that allows Claude to set up configurations and jobs for av-training, send job requests to the scheduler server, pause/resume jobs, and monitor jobs.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Nick Hanson"
+  }
+}
