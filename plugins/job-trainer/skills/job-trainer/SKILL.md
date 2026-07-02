@@ -318,7 +318,10 @@ python scripts/jobctl.py submit --config-file run.json
 ```
 
 `build_config.py` resolves preset `_include`/`_append` keys, merges dataset paths
-with append-list, and warns if `model_name` or `dataset_paths` end up empty. The
+with append-list, and warns if `model_name` or `dataset_paths` end up empty. It
+also **auto-sets `training.finish_hook`** so the run converts its trained model
+into a deployable artifact (see "Model conversion" below) — you don't need to add
+this yourself. The
 presets are **bundled with this skill** in `scripts/presets/` (a copy of
 `av-training/training/preset/`), so it works without an `av-training` checkout —
 `--preset-dir` and `--repo-root` both default there. Point them at a live
@@ -385,6 +388,33 @@ num_workers, ...}`. `run_name`/`models_ckpt` are filled in by the server at
 launch. You can also point `submit --config-file` at any hand-written JSON/YAML
 of this shape, and `submit --overlay key=val,...` still works for last-second tweaks.
 
+#### Model conversion (always keep the finish hook)
+
+A trained run saves a PyTorch `.pth` checkpoint, which is **not** the format the
+car/phone app can load. The repo turns it into a deployable **CoreML** artifact
+via a **finish hook** — a shell command the trainer runs once after training
+completes (`training/__main__.py` → `utils/convert_hook.py`, which converts, names,
+and zips the model). The training preset ships with `training.finish_hook: null`,
+so **without this set, jobs finish but never produce a usable model.**
+
+Therefore **every submitted config must set `training.finish_hook`.**
+`build_config.py` does this for you automatically — it defaults
+`training.finish_hook` to `python utils/convert_hook.py` whenever the field is
+empty — so you don't need to add anything for a normal run. Just be aware:
+
+- If a student hand-writes a config (or you build one another way), **add
+  `training.finish_hook: "python utils/convert_hook.py"` yourself** so the run
+  emits a deployable model.
+- The default yields to an **explicit** finish hook: if the student sets one via
+  `--set`/`--set-json training.finish_hook=...`, that value is kept.
+- Pass `--no-convert-hook` only if the student explicitly does **not** want a
+  converted artifact (rare). If you do, tell them the run will only leave a
+  `.pth` checkpoint.
+- The hook runs on the server after training; it needs `utils/convert.py` and its
+  conversion deps present there. If a finished job's logs show the convert step
+  failing, the training itself still succeeded — the `.pth` is safe and can be
+  converted later.
+
 ### Tier 2 — Advanced (comprehensive)
 
 When the student wants more than the six basic knobs, switch to the full config
@@ -410,7 +440,7 @@ move on rather than forcing a choice.
 | **C. Image pipeline** | crop, resize, augmentation | `data.crop_x`/`crop_y`, `data.resize`, `data.augment`, `data.random_shift`, `data.steering_factor`, `data.max_augmentation` |
 | **D. Dataset & sampling** | composition, splits, history/horizon | `data.max_dataset_size`, `data.train_test_split`, `data.resample`, `data.repeat`, `data.history_length`, `data.seq_len`, `data.action_length`/`action_stride`, `data.num_workers` |
 | **E. Optimization & schedule** | training loop | `training.epochs`, `batch_size`/`mini_batch`, `optimizer`/`optimizer_args`, `scheduler`/`scheduler_args`, `clip_grad`, `mixing` |
-| **F. Hooks** | save/finish/eval hooks (rare) | `training.save_hook`, `finish_hook`, `evaluate_hook` |
+| **F. Hooks** | save / eval hooks (rare); **`finish_hook` = model conversion, set by default** | `training.save_hook`, `finish_hook` (defaults to `python utils/convert_hook.py`), `evaluate_hook` |
 
 #### Setting advanced values with build_config.py
 

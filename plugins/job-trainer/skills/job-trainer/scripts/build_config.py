@@ -51,6 +51,14 @@ PRESET_DIR_DEFAULT = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "presets")
 REPO_ROOT_DEFAULT = PRESET_DIR_DEFAULT
 
+# The training preset ships with training.finish_hook: null, so the trained .pth
+# is never converted into a deployable (CoreML) artifact. Every run should emit a
+# usable model, so we default the finish hook to the repo's convert hook. The
+# trainer runs this as a shell command after training, with SAVE_DIR in the env
+# (see av-training/training/__main__.py + utils/convert_hook.py). Overridable via
+# --set/--set-json training.finish_hook=..., or disabled with --no-convert-hook.
+DEFAULT_FINISH_HOOK = "python utils/convert_hook.py"
+
 
 def _die(msg):
     print(f"error: {msg}", file=sys.stderr)
@@ -240,6 +248,13 @@ def build(args):
     apply_set(cfg, args.set)
     apply_set_json(cfg, args.set_json)
 
+    # 7. convert hook: ensure the run produces a deployable model. Applied last so
+    #    it fills in the preset's null default, but yields to any explicit
+    #    finish_hook the caller set via --set/--set-json above.
+    if not args.no_convert_hook:
+        if not cfg.get("training", {}).get("finish_hook"):
+            set_path(cfg, "training.finish_hook", DEFAULT_FINISH_HOOK)
+
     return cfg
 
 
@@ -271,6 +286,10 @@ def main(argv=None):
                    help="training.batch_size")
     p.add_argument("--user-id", dest="user_id",
                    help="stamp user_id into the config (optional)")
+    p.add_argument("--no-convert-hook", action="store_true", dest="no_convert_hook",
+                   help="do not default training.finish_hook to the model-convert "
+                        "hook (by default it is set so the run emits a deployable "
+                        "CoreML artifact)")
     p.add_argument("--set", help="scalar overrides, e.g. data.num_workers=8,training.mixing=true")
     p.add_argument("--set-json", action="append", dest="set_json", metavar="KEY=JSON",
                    help="list/nested/typed override from JSON; repeatable, one key "

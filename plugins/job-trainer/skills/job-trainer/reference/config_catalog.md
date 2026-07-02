@@ -171,7 +171,7 @@ with `--set-json 'data.type="..."'`.
 | Key | Default | Valid | Notes |
 |-----|---------|-------|-------|
 | `training.save_hook` | `null` | shell command str | run after each checkpoint save |
-| `training.finish_hook` | `null` | shell command str | run once after training finishes |
+| `training.finish_hook` | `python utils/convert_hook.py` (auto-set by `build_config.py`; preset raw default is `null`) | shell command str | run once after training finishes; the default converts the trained `.pth` into a deployable CoreML artifact. Keep it set so the run produces a usable model. |
 | `training.evaluate_hook` | `null` | `"module.function"` path | custom eval callback (gated by `training.eval_hook`) |
 
 ---
