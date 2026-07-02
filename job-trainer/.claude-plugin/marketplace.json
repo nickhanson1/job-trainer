@@ -1,0 +1,11 @@
+{
+  "name": "job-trainer",
+  "owner": { "name": "Nick Hanson" },
+  "plugins": [
+    {
+      "name": "job-trainer",
+      "source": "./plugins/job-trainer",
+      "description": "A skill that allows Claude to set up configurations and jobs for av-training, send job requests to the scheduler server, pause/resume jobs, and monitor jobs."
+    }
+  ]
+}
