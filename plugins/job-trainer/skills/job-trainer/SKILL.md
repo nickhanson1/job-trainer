@@ -81,6 +81,7 @@ Configure once via env vars (or pass `--socket` / `--user` per call):
 ```bash
 export SCHEDULER_SOCKET="TCP:130.245.191.128:8091"   # see "Known ports" below — CONFIRM with the user first
 export SCHEDULER_USER="kmahon"                  # the student's user_id
+export SCHEDULER_UPLOAD_URL="http://130.245.191.128:80"  # data-upload server (dataset listing) — CONFIRM first
 ```
 
 ### Known ports (confirm before using)
@@ -95,6 +96,14 @@ hosts drift between terms and machines.
 | `TCP:130.245.191.128:8091`   | Student commands (`job:*`, `user:*`)      | Group1 notebook (most recent)   |
 | `TCP:130.245.191.128:8081`   | Admin / multi-server view (`admin:*`)     | Group1 notebook (instructor)    |
 | `TCP:0.0.0.0:8080`     | Built-in default if a server is started without `--socket` | `job_queue.py` |
+| `http://130.245.191.128:80` | **Dataset/model listing** (`GET /datasets`, `/models`) — the data-upload server, a **separate HTTP service** from the scheduler | `utils/data_upload_server.py` |
+
+The **data-upload server is HTTP, not the socket scheduler.** It owns the shared
+datasets directory, so listing a student's datasets goes through it (`GET
+/datasets?user_id=<id>`), not through the scheduler socket. It has no `__main__`
+in the repo, so its port isn't pinned there; the skill defaults to port `80` on
+the same host as the scheduler — **confirm this with the user** before relying on
+it, exactly like the scheduler socket.
 
 Default to `TCP:130.245.191.128:8091` for normal student work, but first ask
 something like: "I'll use the scheduler at `TCP:130.245.191.128:8091` — is that the
@@ -102,8 +111,9 @@ right host/port for you?" If they're on a remote server, the host will not be
 `127.0.0.1`.
 
 ```bash
-# List the student's OWN uploaded datasets (server filesystem glob, not a job)
+# List the student's OWN uploaded datasets (HTTP query to the data-upload server)
 python scripts/jobctl.py datasets
+python scripts/jobctl.py datasets --local   # instead glob the server FS (on-server only)
 
 # List the student's jobs (id + status + model + epoch progress)
 python scripts/jobctl.py list
@@ -224,10 +234,11 @@ show one summary and get a single confirm. The student's job is just to give you
 context and say "go".
 
 **Step 1 — Find their data (don't make them type paths).** Run
-`python scripts/jobctl.py datasets` to discover their uploads. If it returns one
-obvious dataset, use it. If several, ask which (or whether to combine them). If
-the path isn't reachable, ask for the dataset name and build the path per
-"Training on the student's own collected data".
+`python scripts/jobctl.py datasets` to discover their uploads (an HTTP query to
+the data-upload server). If it returns one obvious dataset, use it. If several,
+ask which (or whether to combine them). If the upload server isn't reachable, ask
+for the dataset name and build the path per "Training on the student's own
+collected data".
 
 **Step 2 — Ask for context, not config.** Ask a few **optional** plain-language
 questions — make clear they can skip any and you'll pick sensibly. Use these
@@ -347,19 +358,24 @@ course preset. Uploaded data lands on the server at
 `/studentdata/past_summer_camp/summer2026/datasets/`, one folder per dataset
 named `<user_id>^<dataset_name>` (the data-upload server's convention; the `^`
 keeps one student's data from colliding with another's). Discover a student's
-own datasets exactly like the notebook does — `Path(dir).glob(f"{user_id}^*")` —
-via:
+own datasets by asking the **data-upload server** over HTTP (it owns that
+directory and lists it via `GET /datasets?user_id=<id>`):
 
 ```bash
-python scripts/jobctl.py datasets            # uses $SCHEDULER_USER
+python scripts/jobctl.py datasets            # uses $SCHEDULER_USER + $SCHEDULER_UPLOAD_URL
 python scripts/jobctl.py --user kmahon datasets --json
 ```
 
-This globs the **server filesystem**, so it only works where that path is
-reachable (run on the GPU server, or pass `--datasets-dir` / set
-`$SCHEDULER_DATASETS_DIR` if it's mounted elsewhere). If it isn't reachable, ask
-the student for their dataset name(s) and build the full path yourself as
+This works **from anywhere** — it's an HTTP call, not a filesystem glob, so you
+don't need to be on the GPU server. Confirm the upload-server URL with the user
+first (see "Known ports"); override with `--upload-url` or `$SCHEDULER_UPLOAD_URL`.
+If the server can't be reached, ask the student for their dataset name(s) and
+build the full path yourself as
 `/studentdata/past_summer_camp/summer2026/datasets/<user_id>^<name>`.
+
+> If you happen to be running **on the GPU server itself**, `datasets --local`
+> globs the filesystem directly (`Path(dir).glob(f"{user_id}^*")`) instead of
+> using HTTP — the old behavior, kept as a fallback.
 
 Then build the config from the **`ios_data` preset** (for the iOS dataset `type`
 and the right crop/resize/steering defaults) and **replace** `dataset_paths` with

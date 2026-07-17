@@ -15,7 +15,7 @@ Configuration (env vars, overridable per-command):
 
 Examples:
     python jobctl.py list
-    python jobctl.py datasets [--json]        # your uploaded datasets (FS glob)
+    python jobctl.py datasets [--json]        # your uploaded datasets (HTTP; --local for on-server FS)
     python jobctl.py status <job_id> [--config]
     python jobctl.py logs <job_id> --tail 200
     python jobctl.py monitor <job_id>
@@ -33,13 +33,23 @@ import re
 import socket
 import sys
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 
 TERMINAL_STATES = {"finished", "cancelled", "canceled"}
 
 # Where the data-upload server drops student uploads, one folder per dataset
-# named "<user_id>^<dataset_name>". Override with --datasets-dir or
-# $SCHEDULER_DATASETS_DIR if the path is mounted elsewhere.
+# named "<user_id>^<dataset_name>". Used only by `datasets --local` (globbing the
+# server FS directly); override with --datasets-dir or $SCHEDULER_DATASETS_DIR.
 DATASETS_DIR_DEFAULT = "/studentdata/past_summer_camp/summer2026/datasets"
+
+# The data-upload server (FastAPI) owns the datasets dir and lists it over HTTP
+# via GET /datasets — the only way to see datasets from OFF the server, since the
+# path above is not mounted locally. It runs on the same host as the scheduler.
+# CONFIRM the address with the user before relying on it. Override with
+# --upload-url or $SCHEDULER_UPLOAD_URL.
+UPLOAD_URL_DEFAULT = "http://130.245.191.128:80"
 
 
 # --------------------------------------------------------------------------- #
@@ -69,6 +79,21 @@ def send_msg(sock_addr, msg):
         _die(f"Scheduler returned non-JSON: {e}")
     finally:
         client.close()
+
+
+def http_get_json(url):
+    """GET a URL and parse JSON (stdlib only) — used for the data-upload server."""
+    try:
+        with urllib.request.urlopen(url, timeout=15) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        _die(f"Upload server returned HTTP {e.code} for {url}: {e.reason}")
+    except (urllib.error.URLError, OSError) as e:
+        _die(f"Could not reach the data-upload server at {url}: {e}\n"
+             "Confirm its host/port (--upload-url or $SCHEDULER_UPLOAD_URL), or "
+             "run `datasets --local` if you're on the GPU server itself.")
+    except json.JSONDecodeError as e:
+        _die(f"Upload server returned non-JSON: {e}")
 
 
 def call(args, msg):
@@ -360,24 +385,62 @@ def cmd_finetune(args):
 
 
 def cmd_datasets(args):
-    """List the student's OWN uploaded datasets by globbing the server FS.
+    """List the student's OWN uploaded datasets.
 
-    This is NOT a scheduler call — it globs `<datasets_dir>/<user_id>^*` exactly
-    like the notebook (Path(dir).glob(f"{user_id}^*")). Needs the path to be
-    reachable (run on the GPU server, or point --datasets-dir at a mount).
+    By default this queries the data-upload server over HTTP (GET /datasets) —
+    the only way to see datasets from off-server, since they live on the server
+    filesystem and are not mounted locally. Pass --local to glob the filesystem
+    directly (only works when run ON the GPU server, like the notebook's
+    Path(dir).glob(f"{user_id}^*")).
     """
-    import glob as _glob
     user = args.user or os.environ.get("SCHEDULER_USER")
     if not user:
         _die("No user_id. Set SCHEDULER_USER or pass --user.")
+
+    if args.local:
+        _datasets_local(args, user)
+        return
+
+    base = (args.upload_url or os.environ.get("SCHEDULER_UPLOAD_URL")
+            or UPLOAD_URL_DEFAULT).rstrip("/")
+    url = f"{base}/datasets?" + urllib.parse.urlencode({"user_id": user})
+    resp = http_get_json(url)
+    entries = resp.get("datasets", []) if isinstance(resp, dict) else []
+    names = [e.get("dataset") or e.get("name") for e in entries]
+    paths = [e["path"] for e in entries if e.get("path")]
+    set_json = "data.dataset_paths=" + json.dumps(paths)
+
+    if args.json:
+        _emit({
+            "user_id": user,
+            "upload_url": base,
+            "datasets": entries,
+            "set_json": set_json,
+        })
+        return
+
+    if not entries:
+        print(f"No datasets found for user {user!r} on {base} "
+              f"(looked for '{user}^*').")
+        return
+    print(f"{len(entries)} dataset(s) for {user} on {base}:")
+    for n, p in zip(names, paths):
+        print(f"  {n}\t{p}")
+    print("\nReady-to-paste for build_config.py (replaces dataset_paths):")
+    print(f"  --set-json '{set_json}'")
+
+
+def _datasets_local(args, user):
+    """Glob the server filesystem for <datasets_dir>/<user_id>^* (on-server only)."""
+    import glob as _glob
     root = (args.datasets_dir or os.environ.get("SCHEDULER_DATASETS_DIR")
             or DATASETS_DIR_DEFAULT)
     if not os.path.isdir(root):
         _die(f"Datasets dir not reachable: {root}\n"
-             "This globs the SERVER filesystem. Run on the GPU server, or pass "
-             "--datasets-dir / set $SCHEDULER_DATASETS_DIR if it's mounted "
-             "elsewhere. Otherwise ask the student for their dataset name(s) and "
-             f"build paths as {root}/<user_id>^<name>.")
+             "`--local` globs the SERVER filesystem; run it on the GPU server, "
+             "or pass --datasets-dir / set $SCHEDULER_DATASETS_DIR if mounted "
+             "elsewhere. Otherwise drop --local to query the data-upload server "
+             "over HTTP instead.")
     paths = sorted(p for p in _glob.glob(os.path.join(root, f"{user}^*"))
                    if os.path.isdir(p))
     names = [os.path.basename(p).split("^", 1)[1] for p in paths]
@@ -434,11 +497,15 @@ def build_parser():
     sub.add_parser("list", help="list your jobs with status/progress").set_defaults(func=cmd_list)
 
     s = sub.add_parser("datasets",
-                       help="list your uploaded datasets (server filesystem glob, not a job)")
+                       help="list your uploaded datasets (via the data-upload server over HTTP)")
     s.add_argument("--json", action="store_true",
                    help="machine-readable output + ready-to-paste --set-json line")
+    s.add_argument("--upload-url", dest="upload_url",
+                   help="data-upload server base URL (else $SCHEDULER_UPLOAD_URL or default)")
+    s.add_argument("--local", action="store_true",
+                   help="glob the server filesystem directly instead of HTTP (on-server only)")
     s.add_argument("--datasets-dir", dest="datasets_dir",
-                   help="datasets root (else $SCHEDULER_DATASETS_DIR or server default)")
+                   help="datasets root for --local (else $SCHEDULER_DATASETS_DIR or server default)")
     s.set_defaults(func=cmd_datasets)
 
     s = sub.add_parser("status", help="show one job's status")
