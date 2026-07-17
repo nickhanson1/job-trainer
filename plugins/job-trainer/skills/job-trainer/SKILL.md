@@ -19,6 +19,9 @@ description: >-
   crashed/failed", "list my jobs", "change the crop", "make the network bigger",
   "tune the architecture", "set the history length", "configure all the options",
   "advanced config".
+allowed-tools:
+  - Bash(python scripts/jobctl.py:*)
+  - Bash(python scripts/build_config.py:*)
 ---
 
 # AV Training Job Scheduler
